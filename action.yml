@@ -1,0 +1,152 @@
+name: "GPC - Publish to Google Play"
+description: "Upload an Android .aab/.apk to Google Play with a built-in preflight compliance gate. Powered by the GPC CLI."
+author: "Yasser Studio"
+branding:
+  icon: "upload-cloud"
+  color: "green"
+
+inputs:
+  service-account-json:
+    description: "Google service account JSON key CONTENTS (not a path). Store it as a secret."
+    required: false
+  package-name:
+    description: "App package name, e.g. com.example.app."
+    required: false
+  release-files:
+    description: "Path to the .aab or .apk to upload. v1 uploads a single file."
+    required: false
+  track:
+    description: "Play track: internal, alpha, beta, production, or a custom track. Default: internal."
+    required: false
+  status:
+    description: "Release status: completed, inProgress, draft, or halted."
+    required: false
+  rollout:
+    description: "Staged rollout percentage (1-100). For a fraction (0.0-1.0), use user-fraction."
+    required: false
+  user-fraction:
+    description: "Staged rollout as a fraction (0.0-1.0). Converted to a percentage for gpc."
+    required: false
+  release-notes:
+    description: "Release notes for the default locale (en-US)."
+    required: false
+  release-notes-dir:
+    description: "Directory of localized release notes (Fastlane layout: <dir>/<locale>.txt)."
+    required: false
+  name:
+    description: "Release name (defaults to the version name)."
+    required: false
+  mapping:
+    description: "ProGuard/R8 mapping.txt for deobfuscation."
+    required: false
+  in-app-update-priority:
+    description: "In-app update priority, 0-5 (5 highest)."
+    required: false
+  changes-not-sent-for-review:
+    description: "Commit without sending changes for review."
+    required: false
+    default: "false"
+  retain-version-codes:
+    description: "Comma-separated version codes to retain alongside the new upload."
+    required: false
+  dry-run:
+    description: "Preview/validate against Play without committing a release. Maps to gpc --dry-run. Useful for smoke tests."
+    required: false
+    default: "false"
+  preflight:
+    description: "Run gpc preflight as a compliance gate before uploading. Fails the job on findings."
+    required: false
+    default: "true"
+  preflight-fail-on:
+    description: "Preflight severity that fails the job: critical, error, warning, or info."
+    required: false
+    default: "error"
+  args:
+    description: "Escape hatch: run an arbitrary gpc command (e.g. 'releases promote --from internal --to production'). When set, the opinionated upload inputs are ignored; service-account-json and package-name are still required."
+    required: false
+  gpc-version:
+    description: "GPC CLI version (e.g. 0.9.81). Use 'latest' to resolve the newest release. Defaults to a pinned version."
+    required: false
+  working-directory:
+    description: "Directory to run gpc in."
+    required: false
+
+  # --- r0adkll/upload-google-play compatibility aliases ---
+  serviceAccountJson:
+    description: "Alias of service-account-json (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use service-account-json."
+  serviceAccountJsonPlainText:
+    description: "Alias of service-account-json (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use service-account-json."
+  packageName:
+    description: "Alias of package-name (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use package-name."
+  releaseFiles:
+    description: "Alias of release-files (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use release-files."
+  releaseFile:
+    description: "Alias of release-files (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use release-files."
+  releaseName:
+    description: "Alias of name (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use name."
+  userFraction:
+    description: "Alias of user-fraction (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use user-fraction or rollout."
+  whatsNewDirectory:
+    description: "Alias of release-notes-dir (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use release-notes-dir."
+  mappingFile:
+    description: "Alias of mapping (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use mapping."
+  inAppUpdatePriority:
+    description: "Alias of in-app-update-priority (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use in-app-update-priority."
+  changesNotSentForReview:
+    description: "Alias of changes-not-sent-for-review (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use changes-not-sent-for-review."
+  versionCodesToRetain:
+    description: "Alias of retain-version-codes (r0adkll compatibility)."
+    required: false
+    deprecationMessage: "Use retain-version-codes."
+
+  # --- r0adkll inputs not supported by gpc-action v1 (declared so a warning fires) ---
+  tracks:
+    description: "Not supported by gpc-action v1 (single track only); ignored."
+    required: false
+    deprecationMessage: "Not supported by gpc-action v1; use 'track'."
+  existingEditId:
+    description: "Not supported by gpc-action v1; ignored."
+    required: false
+    deprecationMessage: "Not supported by gpc-action v1; ignored."
+  debugSymbols:
+    description: "Not supported by gpc-action v1; ignored."
+    required: false
+    deprecationMessage: "Not supported by gpc-action v1; ignored."
+
+outputs:
+  version-code:
+    description: "The uploaded version code."
+  track:
+    description: "The track the release was created on."
+  status:
+    description: "The release status."
+  preflight-passed:
+    description: "'true'/'false' if preflight ran, or 'skipped'."
+  result:
+    description: "The full JSON result from gpc."
+
+runs:
+  using: "node24"
+  main: "dist/index.js"

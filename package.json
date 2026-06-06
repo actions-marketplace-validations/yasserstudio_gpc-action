@@ -1,0 +1,38 @@
+{
+  "name": "gpc-action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Publish Android apps to Google Play with GPC: upload with a built-in preflight compliance gate.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/main.ts -o dist --source-map --license licenses.txt --minify",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "all": "npm run typecheck && npm run test && npm run build"
+  },
+  "keywords": [
+    "android",
+    "google-play",
+    "play-store",
+    "publish",
+    "gpc",
+    "github-action"
+  ],
+  "author": "Yasser Studio",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/tool-cache": "^2.0.2"
+  },
+  "overrides": {
+    "undici": "^6.26.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@vercel/ncc": "^0.38.3",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.0"
+  }
+}

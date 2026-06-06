@@ -1,0 +1,33 @@
+name: Release
+
+# On a pushed semver tag (e.g. v1.0.0), move the major alias tag (v1) to it,
+# so consumers can pin `yasserstudio/gpc-action@v1`.
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  move-major-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+      - name: Move major tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Unexpected tag format: $TAG"
+            exit 1
+          fi
+          MAJOR="${TAG%%.*}"   # v1.2.3 -> v1
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f "$MAJOR" "$TAG"
+          git push origin "$MAJOR" --force
